@@ -1,3 +1,6 @@
+import operator
+import math
+
 f = open("input.txt", 'r')
 g = open("output.txt", 'w')
 unsortedtext = (''.join(list(f.read())))
@@ -17,30 +20,45 @@ size = len(text)
 last = ''
 g.write(text)
 
+#compter les fréquences
 for e in text:
     if last == e:
         counter+=1
     else:
-        frequency[e] = e + " " + hex(counter) + " " + str('%.5f' % (counter/size))
+        frequency[last] = counter
         counter=1
         generalCounter += 1
     last = e
 
-counter = 0
-counter2 = 0
-while len(frequency) > 0:
-    try:
-        orderedFreq[counter2] = frequency.pop(unsortedtext[counter])
-        counter2+=1
-        counter+=1
-    except:
-        counter += 1
+#tri par valeur
+frequency_sorted = sorted(frequency.items(), key=operator.itemgetter(1))
+frequency_sorted.reverse()
 
-print(text)
+#Print de la valeur en hexa
+for key, value in frequency_sorted:
+    print(str(key)+ " "+hex(value) + " " + str("%.5f" % (value/len(unsortedtext))))
 
-for i in range(0, len(orderedFreq)):
-    print(orderedFreq[i])
+#Calcul de l'entropie
+entropie = 0;
 
+for key, value in frequency_sorted:
+    entropie -= value/len(unsortedtext)*math.log2(value/len(unsortedtext))
 
+#Calcul de la quantité de décision
+
+quant_decision = math.log2(len(frequency_sorted))
+
+#Calcul de la redondance
+
+redo = quant_decision - entropie
+
+#Compression maximale
+
+compression_max = entropie/8
+
+#Afficher ces valeurs
+print("L\'entropie est de", entropie)
+print("La redondance est de", redo)
+print("Le taux de compression maximale est de", compression_max)
 
 
